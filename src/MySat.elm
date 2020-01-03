@@ -1,5 +1,7 @@
 module MySat exposing (..)
 
+import Debug
+
 
 type alias Problem =
     List Clause
@@ -9,7 +11,8 @@ type alias Clause =
     List Literal
 
 
-type alias Literal = Int
+type alias Literal =
+    Int
 
 
 type alias Solution =
@@ -18,38 +21,37 @@ type alias Solution =
 
 solve : Problem -> Maybe Solution
 solve problem =
-    case problem of
+    let
+        ( p, s ) =
+            unitClauseAssign ( problem, [] )
+    in
+    case p of
         [] ->
-            Just []
+            Just s
 
         [] :: _ ->
             Nothing
 
         (literal :: remainingLiterals) :: remainingClauses ->
-           Just []
+            if List.member [] remainingClauses then
+                Nothing
 
-splitAssign : Literal
-splitAssign = 5
+            else
+                case solve (assign literal remainingClauses) of
+                    Just solution ->
+                        Just (literal :: solution)
 
-fullPureLiteralAssign : Problem -> (Problem, Solution)
-fullPureLiteralAssign problem =
-    ([], [])
+                    Nothing ->
+                        case solve (assign (negate literal) (remainingLiterals :: remainingClauses)) of
+                            Just solution ->
+                                Just (negate literal :: solution)
 
-
-pureLiteralAssign : Literal -> Problem -> Problem
-pureLiteralAssign literal problem =
-    let
-        allLiterals = List.foldl (++) [] problem
-        isPure = not (List.member (negate literal) allLiterals)
-    in
-        if isPure then
-            List.filter (\clause -> not (List.member literal clause)) problem
-        else
-            problem
+                            Nothing ->
+                                Nothing
 
 
-simplify : Literal -> Problem -> Problem
-simplify literal problem =
+assign : Literal -> Problem -> Problem
+assign literal problem =
     let
         filteredClauses =
             List.filter (\clause -> not (List.member literal clause)) problem
@@ -57,24 +59,54 @@ simplify literal problem =
     List.map (\clause -> List.filter (\l -> l /= negate literal) clause) filteredClauses
 
 
-unitClauseAssign : Problem -> (Problem, Solution)
-unitClauseAssign problem =
+
+pureLiteralAssign : Literal -> Problem -> Problem
+pureLiteralAssign literal problem =
     let
-        unitLiterals : List Literal
-        unitLiterals =
-            List.map unitClauseToLiteral problem |> List.filterMap identity
+        allLiterals =
+            List.foldl (++) [] problem
 
-        fer literal (p, solution) =
-            (simplify literal p, literal :: solution)
+        fn : List Literal -> List Literal -> List Literal -> List Literal
+        fn literals stack pures =
+            case (literals, stack) of
+                ([], []) ->
+                    pures
+
+                (l :: restLiterals, []) ->
+                    fn restLiterals [] (l :: pures)
+
+                ([], l :: restStack) ->
+                    fn [] restStack (l :: pures)
+
+                (l :: restLiterals, s :: restStack) ->
+                    
     in
-        List.foldl fer (problem, []) unitLiterals
+    if isPure then
+        List.filter (\clause -> not (List.member literal clause)) problem
+
+    else
+        problem
 
 
-unitClauseToLiteral : Clause -> Maybe Literal
-unitClauseToLiteral clause =
-    case clause of
-        literal :: [] ->
-            Just literal
+unitClauseAssign : ( Problem, Solution ) -> ( Problem, Solution )
+unitClauseAssign ( problem, solution ) =
+    case find (\clause -> List.length clause == 1) problem of
+        Just (literal :: []) ->
+            unitClauseAssign ( assign literal problem, literal :: solution )
 
         _ ->
+            ( problem, solution )
+
+
+find : (a -> Bool) -> List a -> Maybe a
+find predicate list =
+    case list of
+        [] ->
             Nothing
+
+        first :: rest ->
+            if predicate first then
+                Just first
+
+            else
+                find predicate rest
