@@ -2,7 +2,7 @@ module TestSat exposing (suite)
 
 import Expect
 import Sat exposing (solve)
-import Sat.Model
+import Sat.Utils exposing (fromDimacs)
 import Set
 import Test exposing (..)
 
@@ -50,7 +50,7 @@ suite =
                 \_ ->
                     let
                         correctAssignments = [-1, 2, -3, -4, -5, -6, -7, 8, 9, -10, 11, -12]
-                        result = solve (Sat.Model.fromDimacs factoringProblem) |> Maybe.withDefault []
+                        result = solve (fromDimacs factoringProblem) |> Maybe.withDefault []
                     in
                     List.map (\l -> List.member l result) correctAssignments
                         |> List.foldl (&&) True

@@ -1,12 +1,12 @@
-module Sat.Optimizations exposing (assign, pureLiteralAssign, unitClauseAssign, cmpLiteral)
+module Sat.Optimizations exposing (assign, cmpLiteral, pureLiteralAssign, unitClauseAssign)
 
 import Sat.Model exposing (Literal, Problem, Solution)
+import Sat.Utils exposing (find, kernelFilter1)
 import Set
-import Utils
 
 
-assign : Literal -> ( Problem, Solution) -> ( Problem, Solution )
-assign literal (problem, solution) =
+assign : Literal -> ( Problem, Solution ) -> ( Problem, Solution )
+assign literal ( problem, solution ) =
     let
         ( withLiteral, withoutLiteral ) =
             List.partition (\clause -> List.member literal clause) problem
@@ -25,7 +25,6 @@ assign literal (problem, solution) =
 
         assignments =
             Set.filter (\l -> not (Set.member l remainingLiterals || Set.member (negate l) remainingLiterals)) filteredEliminatedLiterals |> Set.toList
-
     in
     ( simplifiedProblem, assignments ++ solution )
 
@@ -36,9 +35,8 @@ pureLiteralAssign ( problem, solution ) =
         pureLiterals =
             List.foldl (++) [] problem
                 |> List.sortWith cmpLiteral
-                |> Utils.kernelFilter1 uniqueFilter
-                |> Utils.kernelFilter1 pureFilter
-
+                |> kernelFilter1 uniqueFilter
+                |> kernelFilter1 pureFilter
 
         uniqueFilter : Maybe Literal -> Literal -> Maybe Literal -> Bool
         uniqueFilter prev current next =
@@ -64,7 +62,7 @@ pureLiteralAssign ( problem, solution ) =
                 ( Nothing, Nothing ) ->
                     True
     in
-    List.foldl assign (problem, solution) pureLiterals
+    List.foldl assign ( problem, solution ) pureLiterals
 
 
 cmpLiteral : Literal -> Literal -> Order
@@ -83,9 +81,10 @@ cmpLiteral lhs rhs =
 
 unitClauseAssign : ( Problem, Solution ) -> ( Problem, Solution )
 unitClauseAssign ( problem, solution ) =
-    case Utils.find (\clause -> List.length clause == 1) problem of
+    case find (\clause -> List.length clause == 1) problem of
         Just (literal :: []) ->
-            unitClauseAssign (assign literal (problem, solution))
+            unitClauseAssign (assign literal ( problem, solution ))
 
         _ ->
             ( problem, solution )
+
