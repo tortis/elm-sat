@@ -1,7 +1,6 @@
-module TestUtils exposing (..)
+module TestUtils exposing (suite)
 
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
+import Expect
 import Test exposing (..)
 import Utils
 
@@ -43,10 +42,9 @@ suite =
                 \_ ->
                     let
                         list =
-                            [1, 2, 3, 4, 5]
+                            [ 1, 2, 3, 4, 5 ]
                     in
                     Expect.equal [] (Utils.kernelFilter1 (\_ _ _ -> False) list)
-
             , test "should remove duplicates from sorted list" <|
                 \_ ->
                     let
