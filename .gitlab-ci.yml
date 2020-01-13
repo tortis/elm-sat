@@ -1,8 +1,4 @@
-image: alpine:latest
-
-services:
-  - name: tortis/alpine-elm-ci:latest
-    alias: elm
+image: tortis/alpine-elm-ci:latest
 
 # Select what we should cache between builds
 cache:
@@ -12,4 +8,4 @@ cache:
 # Run our tests
 test:
   script:
-    - elm make
+    - elm-test
