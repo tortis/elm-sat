@@ -10,14 +10,12 @@ Sat problems must be in [CNF]() form.
 
 ```Elm
 import Sat
-import Sat.Problem
 
 problem : Sat.Problem
 problem = [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ], [ -1, -2, -3 ], [ 2, 3 ], [ -2, -3 ] ]
 
 solution : Maybe Sat.Solution
-solution = Sat.solve problem
--- Just [1,2,-3]
+solution = Sat.solve problem -- Just [1,2,-3]
 ```
 
 The Sat.Utils module exposes `fromDimacs` which will turn a DIMACS formatted string into a Problem.
