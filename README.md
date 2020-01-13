@@ -4,23 +4,23 @@ A simple [DPLL](https://en.wikipedia.org/wiki/DPLL_algorithm) sat solver impleme
 Note: This repository is maintained at https://gitlab.com/findley/elm-sat and mirrored to https://github.com/tortis/elm-sat.
 
 ## Usage
-The Sat.Model module exposes the `Problem` type and a function `fromDimacs` which will turn a DIMACS formatted string into a Problem.
-
 The Problem type is just an alias for `List (List Int)`. Variables (literals) are represented by integers where a negative integer indicates negation of the literal.
 
-Sat problems must be in [CNF]() form. 
+Sat problems must be in [CNF]() form.
 
 ```Elm
 import Sat
 import Sat.Problem
 
-problem : Sat.Model.Problem
+problem : Sat.Problem
 problem = [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ], [ -1, -2, -3 ], [ 2, 3 ], [ -2, -3 ] ]
 
-solution : Maybe Sat.Model.Solution
+solution : Maybe Sat.Solution
 solution = Sat.solve problem
 -- Just [1,2,-3]
 ```
+
+The Sat.Utils module exposes `fromDimacs` which will turn a DIMACS formatted string into a Problem.
 
 ## Performance
 Elm Sat performance appears to be worse than [MiniSAT compiled to JS](https://jgalenson.github.io/research.js/demos/minisat.html). Adding benchmarks and improving performance are areas for future development.
