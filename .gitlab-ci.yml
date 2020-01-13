@@ -1,4 +1,7 @@
-image: tortis/alpine-elm-ci:latest
+image:
+  name: tortis/alpine-elm-ci:latest
+  entrypoint: [""]
+
 
 # Select what we should cache between builds
 cache:
