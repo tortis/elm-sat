@@ -1,0 +1,11 @@
+image: tortis/alpine-elm-ci:0.19.1
+
+# Select what we should cache between builds
+cache:
+  paths:
+    - elm-stuff/
+
+# Run our tests
+test:
+  script:
+    - elm-test
