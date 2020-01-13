@@ -1,4 +1,8 @@
-image: tortis/alpine-elm-ci:0.19.1
+image: alpine:latest
+
+services:
+  - name: tortis/alpine-elm-ci:latest
+    alias: elm
 
 # Select what we should cache between builds
 cache:
