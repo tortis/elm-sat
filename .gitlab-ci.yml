@@ -12,4 +12,4 @@ cache:
 # Run our tests
 test:
   script:
-    - elm-test
+    - elm make
