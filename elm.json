@@ -3,7 +3,7 @@
     "name": "tortis/elm-sat",
     "summary": "A basic DPLL SAT solver",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "Sat",
         "Sat.Utils"
